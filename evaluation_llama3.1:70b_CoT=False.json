@@ -1,0 +1,8 @@
+{
+    "00576224.json": {
+        "system_prompt": "You solve puzzles by transforming the input into the output. You are expert at the PGM (Portable Graymap) format.",
+        "user_prompt": "# Transformations\n## Transformation A - Input\n```\n[[8, 6], [6, 4]]\n```\n## Transformation A - Output\n```\n[[8, 6, 8, 6, 8, 6], [6, 4, 6, 4, 6, 4], [6, 8, 6, 8, 6, 8], [4, 6, 4, 6, 4, 6], [8, 6, 8, 6, 8, 6], [6, 4, 6, 4, 6, 4]]\n```\n## Transformation B - Input\n```\n[[3, 2], [7, 8]]\n```\n## Transformation B - Output\n```\n# Predict this output\n```\nWrap your output matrix in <Matrix> and </Matrix>.\n",
+        "response": "## Transformation B - Output\n```\n<Matrix>\n[[3, 2, 3, 2, 3, 2], [7, 8, 7, 8, 7, 8], \n[2, 3, 2, 3, 2, 3], [8, 7, 8, 7, 8, 7], \n[3, 2, 3, 2, 3, 2], [7, 8, 7, 8, 7, 8]]\n</Matrix>\n```",
+        "is_correct": true
+    }
+}
