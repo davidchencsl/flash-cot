@@ -76,7 +76,8 @@ def main():
     easy_df_list, hard_df_list = prepare_arc_data()
     running_data = process_data(easy_df_list, hard_df_list)
     results = run_router(running_data)
-    export_results(results)
+    output_path = "llm-route/output/llama8b-fuison-results.json"
+    export_results(output_path, results)
     
     # results = run_llm(running_data, model='llama3.1:70b')
     # # export_results(results)
