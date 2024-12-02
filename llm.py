@@ -37,10 +37,6 @@ def batch_inference(model_id: str, prompts: list):
             # Remove the prompt text from the start of the response
             response = raw_response[len(prompts[i]):].strip()
             responses.append(response)
-            # print(f"Prompt: {prompts[i]}")
-            # print(f"Raw: {raw_response}")
-            # print(f"Response: {response}")
-            # print(f"Prompt length: {len(prompts[i])}")
 
         return responses
     except Exception as e:
@@ -48,9 +44,9 @@ def batch_inference(model_id: str, prompts: list):
         return []
     
 
-def batch_flash_cot(prompts: list):
-    cot_responses = batch_inference("meta-llama/Llama-3.1-8B-Instruct", prompts+"\nThink through the problem step by step.")
-    full_prompts = [a+"\n"+b for a, b in zip(prompts, cot_responses)]
-    responses = batch_inference("fsaudm/Meta-Llama-3.1-70B-Instruct-INT8", full_prompts+'\nUse the information provided to answer the question.')
+def batch_flash_cot(draft_model_id, summary_model_id, prompts: list):
+    cot_responses = batch_inference(draft_model_id, prompts)
+    full_prompts = [a+"\n"+b+'\nUse the information above to answer the question. Wrap your answer in <ANSWER> and </ANSWER>. For example <ANSWER>X</ANSWER>.' for a, b in zip(prompts, cot_responses)]
+    responses = batch_inference(summary_model_id, full_prompts)
     return responses
     
