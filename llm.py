@@ -14,8 +14,8 @@ def batch_inference(model_id: str, prompts: list):
     """
 
     # Load the tokenizer and model
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-    model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.bfloat16, device_map="auto")
+    tokenizer = AutoTokenizer.from_pretrained(model_id, device_map="auto")
+    model = AutoModelForCausalLM.from_pretrained(model_id, device_map="auto")
 
     tokenizer.pad_token_id = tokenizer.eos_token_id
 
@@ -30,19 +30,27 @@ def batch_inference(model_id: str, prompts: list):
             max_new_tokens=1024,
         )
 
-        # Decode responses and remove prompt text
         responses = []
-        for i, output in enumerate(outputs):
-            # Decode the output tokens
-            decoded = tokenizer.decode(output, skip_special_tokens=True)
-
+        # Decode responses and remove prompt text
+        decoded = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        for i, raw_response in enumerate(decoded):
             # Remove the prompt text from the start of the response
-            response = decoded[len(prompts[i]):].strip()
+            response = raw_response[len(prompts[i]):].strip()
             responses.append(response)
+            # print(f"Prompt: {prompts[i]}")
+            # print(f"Raw: {raw_response}")
+            # print(f"Response: {response}")
+            # print(f"Prompt length: {len(prompts[i])}")
 
         return responses
     except Exception as e:
         print(f"Error during inference: {e}")
         return []
     
+
+def batch_flash_cot(prompts: list):
+    cot_responses = batch_inference("meta-llama/Llama-3.1-8B-Instruct", prompts+"\nThink through the problem step by step.")
+    full_prompts = [a+"\n"+b for a, b in zip(prompts, cot_responses)]
+    responses = batch_inference("fsaudm/Meta-Llama-3.1-70B-Instruct-INT8", full_prompts+'\nUse the information provided to answer the question.')
+    return responses
     
