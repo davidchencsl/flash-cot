@@ -68,8 +68,8 @@ NUM_TEST_SAMPLES = 128
 def main():
     #benchmark(model_id="fsaudm/Meta-Llama-3.1-70B-Instruct-INT8", dataset_id="ARC-Challenge", use_cot=False, batch_size=4)
     #benchmark(model_id="fsaudm/Meta-Llama-3.1-70B-Instruct-INT8", dataset_id="ARC-Challenge", use_cot=True, batch_size=1)
-    #benchmark(model_id="meta-llama/Llama-3.1-8B-Instruct", dataset_id="ARC-Challenge", use_cot=False, batch_size=128) # 128
-    benchmark(model_id="meta-llama/Llama-3.1-8B-Instruct", dataset_id="ARC-Challenge", use_cot=True, batch_size=32) 
+    benchmark(model_id="meta-llama/Llama-3.1-8B-Instruct", dataset_id="ARC-Challenge", use_cot=False, batch_size=64) # 128
+    benchmark(model_id="meta-llama/Llama-3.1-8B-Instruct", dataset_id="ARC-Challenge", use_cot=True, batch_size=64) 
     benchmark(model_id="meta-llama/Llama-3.1-8B-Instruct", summary_model_id="fsaudm/Meta-Llama-3.1-70B-Instruct-INT8", dataset_id="ARC-Challenge", use_cot=True, batch_size=4) 
 
 if __name__ == '__main__':
