@@ -1,6 +1,6 @@
 import pandas as pd
 import re
-from LocalModel import call_openai, call_ollama
+from llm import batch_flash_cot, batch_inference
 from ArcClassify import prepare_arc_data, process_data, route_base_prompt
 import json
 
@@ -18,7 +18,7 @@ def parse_answer(text):
     return answer
 
 
-def run_router(data_list, route_model='llama3.1:70b', easy_model='qwen2.5:7b', hard_model='fusion'):
+def run_router(data_list, route_model='fsaudm/Meta-Llama-3.1-70B-Instruct-INT8', easy_model='meta-llama/Llama-3.1-8B-Instruct', hard_model='fusion'):
     results = []
 
     tot_cnt = 0
@@ -26,13 +26,13 @@ def run_router(data_list, route_model='llama3.1:70b', easy_model='qwen2.5:7b', h
     for idx, (qid, q, c, a, label) in enumerate(data_list):
         route_item = f"Here is the question and choices: \nquestion:{q}\nchoices:\n{c}\n Please determine the output."
         route_prompt = route_base_prompt + route_item
-        route_sign = call_ollama(route_model, route_prompt)
+        route_sign = batch_inference(route_model, [route_prompt])[0]
 
         item = f"Here is the question and choices: \nquestion:{q}\nchoices:\n{c}\n Please determine the answer."
         question_prompt = question_base_prompt + item
         answer_response = None
         if '0' in route_sign:
-            answer_response = call_ollama(easy_model, question_prompt)
+            answer_response = batch_inference(easy_model, [question_prompt])[0]
         else:
             answer_response = call_hard_model(hard_model, question_prompt)
 
@@ -62,10 +62,9 @@ def run_router(data_list, route_model='llama3.1:70b', easy_model='qwen2.5:7b', h
 
 def call_hard_model(model, prompt):
     if model != 'fusion':
-        return call_ollama(model, prompt)
-    
+        return batch_inference(model, [prompt])[0]
     # 8b cot + 70b
-    return call_ollama(model, prompt)
+    return batch_flash_cot(model, prompt)[0]
 
 def export_results(path, data):
     fp = open(path, "w", encoding="utf8")

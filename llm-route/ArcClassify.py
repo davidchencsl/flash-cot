@@ -1,6 +1,7 @@
 import pandas as pd
 import random
 from LocalModel import call_openai, call_ollama
+from llm import batch_flash_cot, batch_inference
 
 route_base_prompt = """Given a problem, you need to determine whether the problem is easy to solve or more complex. Easy to sovle will be answered by a small language model and complex problems will be answered by a large language model.
     Simple questions can usually be answered directly through common sense or a single known scientific fact, question descriptions are usually succinct and clear, as well as having little need for reasoning, and questions tend to be of the factual memory type. 
@@ -81,7 +82,7 @@ def process_data(easy_df_list, hard_df_list):
     random.shuffle(running_data)
     return running_data
 
-def run_llm(data_list, model='llama3.1:70b'):
+def run_llm(data_list, model='fsaudm/Meta-Llama-3.1-70B-Instruct-INT8'):
     
     # base_prompt = """Given a problem, you need to determine whether the problem is easy to solve or more complex. Easy to sovle will be answered by a small language model and complex problems will be answered by a large language model.
     # Simple questions can usually be answered directly through common sense or a single known scientific fact, question descriptions are usually succinct and clear, as well as having little need for reasoning, and questions tend to be of the factual memory type. 
@@ -93,7 +94,7 @@ def run_llm(data_list, model='llama3.1:70b'):
         item = f"Here is the question and choices: \nquestion:{q}\nchoices:\n{c}\n Please determine the output."
         prompt = route_base_prompt + item
         # response = call_openai(prompt)
-        response = call_ollama(model, prompt)
+        response = batch_inference(model, [prompt])[0]
         results.append((q, c, a, label, response))
         if (idx + 1) % 100 == 0:
             print(f"already process {idx + 1} items.")
@@ -123,8 +124,8 @@ def cal_acc(results):
 def main():
     easy_df_list, hard_df_list = prepare_arc_data()
     running_data = process_data(easy_df_list, hard_df_list)
-    results = run_llm(running_data, model='llama3.1:70b')
-    # export_results(results)
+    results = run_llm(running_data)
+    export_results(results)
     cal_acc(results)
     
 
