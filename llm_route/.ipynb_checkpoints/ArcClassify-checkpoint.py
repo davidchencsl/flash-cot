@@ -96,7 +96,7 @@ def process_data(easy_ds, hard_ds, num_of_data=32):
     # print(easy_data[:10])
     # print(hard_data[:10])
     running_data = easy_data + hard_data
-    random.seed(42)
+    random.seed(33)
     random.shuffle(running_data)
 
     num_of_data = min(num_of_data, len(running_data))
